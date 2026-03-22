@@ -61,6 +61,16 @@ export default function BrowsePage() {
           <CardRow key={card.id} card={card} expanded={expanded === card.id} onClick={() => setExpanded(expanded === card.id ? null : card.id)} />
         ))}
       </div>
+
+      <footer className="text-center mt-12 text-purple-400/50 text-sm">
+        <p>
+          A{" "}
+          <a href="https://rollersoft.com.au" target="_blank" rel="noopener noreferrer" className="underline hover:text-purple-300">
+            Rollersoft
+          </a>{" "}
+          project
+        </p>
+      </footer>
     </div>
   );
 }
@@ -98,6 +108,9 @@ function CardRow({ card, expanded, onClick }: { card: TarotCard; expanded: boole
               <div className="text-purple-200/80">{card.reversed}</div>
             </div>
           </div>
+          <Link href={`/card/${card.id}`} className="inline-block mt-3 text-sm text-amber-400 hover:text-amber-300 underline" onClick={(e) => e.stopPropagation()}>
+            View full details →
+          </Link>
         </div>
       )}
     </div>

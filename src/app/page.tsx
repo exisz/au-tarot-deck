@@ -105,6 +105,10 @@ export default function Home() {
         <p className="text-purple-300/70 mt-2">
           Draw · Build · Journal — Your Tarot, Gamified
         </p>
+        <div className="mt-3 inline-block px-4 py-2 rounded-full bg-gradient-to-r from-amber-900/30 to-purple-900/30 border border-amber-500/20">
+          <span className="text-amber-300 text-sm font-medium">🃏 Balatro-inspired Deck Building</span>
+          <span className="text-purple-300/60 text-sm"> — Customize your deck, track every reading</span>
+        </div>
         <nav className="flex justify-center gap-4 mt-4">
           <Link href="/journal" className="btn btn-sm btn-outline border-purple-500/50 text-purple-300 hover:bg-purple-900">
             📖 Journal
@@ -219,6 +223,13 @@ export default function Home() {
       <footer className="text-center mt-12 text-purple-400/50 text-sm">
         <p>Arcana Deck — Tarot for the modern seeker</p>
         <p className="mt-1">78 cards · Rider-Waite tradition · Public domain imagery</p>
+        <p className="mt-2">
+          A{" "}
+          <a href="https://rollersoft.com.au" target="_blank" rel="noopener noreferrer" className="underline hover:text-purple-300">
+            Rollersoft
+          </a>{" "}
+          project
+        </p>
       </footer>
     </div>
   );
