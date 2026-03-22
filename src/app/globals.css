@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: mystical --default;
+}
+
+@theme {
+  --color-mystical-primary: #9333ea;
+  --color-mystical-secondary: #6d28d9;
+  --color-mystical-accent: #f59e0b;
+  --color-mystical-base-100: #0f0a1a;
+  --color-mystical-base-200: #1a1128;
+  --color-mystical-base-300: #251a36;
+  --color-mystical-base-content: #e2d9f3;
+  --color-mystical-neutral: #2a1f3d;
+  --color-mystical-neutral-content: #d4c6eb;
+}
+
+@layer base {
+  body {
+    background: linear-gradient(135deg, #0f0a1a 0%, #1a0a2e 50%, #0f0a1a 100%);
+    min-height: 100vh;
+  }
+}
+
+.card-flip {
+  perspective: 1000px;
+}
+
+.card-flip-inner {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card-flip-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+.glow {
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.3), 0 0 40px rgba(147, 51, 234, 0.1);
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 0 40px rgba(245, 158, 11, 0.1);
+}
