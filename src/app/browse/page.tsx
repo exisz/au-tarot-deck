@@ -108,7 +108,7 @@ function CardRow({ card, expanded, onClick }: { card: TarotCard; expanded: boole
               <div className="text-purple-200/80">{card.reversed}</div>
             </div>
           </div>
-          <Link href={`/card/${card.id}`} className="inline-block mt-3 text-sm text-amber-400 hover:text-amber-300 underline" onClick={(e) => e.stopPropagation()}>
+          <Link href={`/card/${card.slug}`} className="inline-block mt-3 text-sm text-amber-400 hover:text-amber-300 underline" onClick={(e) => e.stopPropagation()}>
             View full details →
           </Link>
         </div>

@@ -1,29 +1,31 @@
-import { ALL_CARDS } from "@/lib/tarot-data";
+import { ALL_CARDS, getCardBySlug } from "@/lib/tarot-data";
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export function generateStaticParams() {
-  return ALL_CARDS.map((card) => ({ id: String(card.id) }));
+  return ALL_CARDS.map((card) => ({ slug: card.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
-  const card = ALL_CARDS.find((c) => c.id === Number(id));
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const card = getCardBySlug(slug);
   if (!card) return { title: "Card Not Found" };
   return {
     title: `${card.name} (${card.nameZh}) — Tarot Card Meaning | Arcana Deck`,
-    description: `${card.name} tarot card meaning. Upright: ${card.upright}. Reversed: ${card.reversed}. ${card.description}`,
-    keywords: [card.name, card.nameZh, "tarot meaning", "tarot card", card.arcana === "major" ? "major arcana" : `${card.suit} suit`],
+    description: `${card.name} tarot card meaning. Upright: ${card.upright}. Reversed: ${card.reversed}. ${card.description.slice(0, 200)}`,
+    keywords: [card.name, card.nameZh, "tarot meaning", "tarot card", ...(card.keywords || []), card.arcana === "major" ? "major arcana" : `${card.suit} suit`],
     openGraph: {
       title: `${card.name} — Tarot Meaning`,
-      description: card.description,
+      description: card.description.slice(0, 200),
+      images: card.image ? [{ url: card.image, alt: card.name }] : undefined,
     },
   };
 }
 
-export default async function CardPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const card = ALL_CARDS.find((c) => c.id === Number(id));
+export default async function CardPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const card = getCardBySlug(slug);
 
   if (!card) {
     return <div className="min-h-screen flex items-center justify-center text-purple-300">Card not found</div>;
@@ -38,11 +40,14 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
     "@type": "Article",
     name: `${card.name} Tarot Card Meaning`,
     headline: `${card.name} (${card.nameZh}) — Tarot Card Meaning`,
-    description: card.description,
+    description: card.description.slice(0, 200),
+    image: card.image,
     mainEntityOfPage: {
       "@type": "WebPage",
+      "@id": `https://tarot.rollersoft.com.au/card/${card.slug}`,
     },
     author: { "@type": "Organization", name: "Arcana Deck" },
+    keywords: card.keywords?.join(", "),
   };
 
   return (
@@ -56,13 +61,36 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
 
       <div className="bg-purple-950/50 rounded-2xl p-8 border border-purple-500/20">
         <div className="text-center mb-6">
-          <div className="text-6xl mb-4">{card.symbol}</div>
+          {card.image ? (
+            <div className="relative w-48 h-80 mx-auto mb-4 rounded-lg overflow-hidden shadow-lg shadow-purple-900/50">
+              <Image
+                src={card.image}
+                alt={`${card.name} - Rider-Waite-Smith Tarot`}
+                fill
+                className="object-cover"
+                sizes="192px"
+                unoptimized
+              />
+            </div>
+          ) : (
+            <div className="text-6xl mb-4">{card.symbol}</div>
+          )}
           <h1 className="text-3xl font-bold text-purple-100">{card.name}</h1>
           <p className="text-xl text-purple-400 mt-1">{card.nameZh}</p>
-          <div className="flex justify-center gap-2 mt-3">
+          <div className="flex justify-center gap-2 mt-3 flex-wrap">
             <span className="text-xs px-3 py-1 rounded-full bg-purple-800/50 text-purple-300">
               {card.arcana === "major" ? "Major Arcana" : `${card.suit!.charAt(0).toUpperCase() + card.suit!.slice(1)}`}
             </span>
+            {card.element && (
+              <span className="text-xs px-3 py-1 rounded-full bg-purple-800/50 text-purple-300">
+                {card.element}
+              </span>
+            )}
+            {card.zodiac && (
+              <span className="text-xs px-3 py-1 rounded-full bg-purple-800/50 text-purple-300">
+                {card.zodiac}
+              </span>
+            )}
             {card.number !== undefined && (
               <span className="text-xs px-3 py-1 rounded-full bg-purple-800/50 text-purple-300">
                 #{card.number}
@@ -72,6 +100,16 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
         </div>
 
         <p className="text-purple-200/80 text-center mb-8 leading-relaxed">{card.description}</p>
+
+        {card.keywords && card.keywords.length > 0 && (
+          <div className="flex justify-center gap-2 mb-8 flex-wrap">
+            {card.keywords.map((kw) => (
+              <span key={kw} className="text-xs px-2 py-1 rounded bg-purple-900/50 text-purple-400 border border-purple-700/30">
+                {kw}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-amber-900/20 rounded-xl p-5 border border-amber-500/20">
@@ -88,12 +126,12 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
       {/* Navigation */}
       <div className="flex justify-between mt-6">
         {prev ? (
-          <Link href={`/card/${prev.id}`} className="text-purple-400 hover:text-purple-300 text-sm">
+          <Link href={`/card/${prev.slug}`} className="text-purple-400 hover:text-purple-300 text-sm">
             ← {prev.name}
           </Link>
         ) : <div />}
         {next ? (
-          <Link href={`/card/${next.id}`} className="text-purple-400 hover:text-purple-300 text-sm">
+          <Link href={`/card/${next.slug}`} className="text-purple-400 hover:text-purple-300 text-sm">
             {next.name} →
           </Link>
         ) : <div />}
