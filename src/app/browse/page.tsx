@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { ALL_CARDS, TarotCard } from "@/lib/tarot-data";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function BrowsePage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "major" | "wands" | "cups" | "swords" | "pentacles">("all");
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [view, setView] = useState<"grid" | "list">("grid");
 
   const filtered = ALL_CARDS.filter((c) => {
     if (filter === "major" && c.arcana !== "major") return false;
@@ -55,12 +57,40 @@ export default function BrowsePage() {
 
       <div className="text-sm text-purple-400 mb-3">{sortedCards.length} cards</div>
 
-      {/* Card Grid */}
-      <div className="space-y-2">
-        {sortedCards.map((card) => (
-          <CardRow key={card.id} card={card} expanded={expanded === card.id} onClick={() => setExpanded(expanded === card.id ? null : card.id)} />
-        ))}
+      {/* View Toggle */}
+      <div className="flex gap-2 mb-4">
+        <button onClick={() => setView("grid")} className={`btn btn-sm ${view === "grid" ? "bg-purple-600 text-white border-0" : "btn-ghost text-purple-300"}`}>▦ Grid</button>
+        <button onClick={() => setView("list")} className={`btn btn-sm ${view === "list" ? "bg-purple-600 text-white border-0" : "btn-ghost text-purple-300"}`}>☰ List</button>
       </div>
+
+      {/* Card Display */}
+      {view === "grid" ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {sortedCards.map((card) => (
+            <Link key={card.id} href={`/card/${card.slug}`} className="group">
+              <div className="bg-purple-950/40 rounded-xl border border-purple-500/15 hover:border-purple-500/40 transition-all overflow-hidden">
+                {card.image ? (
+                  <div className="relative w-full aspect-[2/3]">
+                    <Image src={card.image} alt={card.name} fill className="object-cover group-hover:scale-105 transition-transform" sizes="(max-width:640px) 50vw,(max-width:1024px) 25vw,20vw" unoptimized />
+                  </div>
+                ) : (
+                  <div className="w-full aspect-[2/3] flex items-center justify-center bg-purple-900/30 text-4xl">{card.symbol}</div>
+                )}
+                <div className="p-2 text-center">
+                  <div className="text-sm font-semibold text-purple-100 truncate">{card.name}</div>
+                  <div className="text-xs text-purple-400">{card.nameZh}</div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {sortedCards.map((card) => (
+            <CardRow key={card.id} card={card} expanded={expanded === card.id} onClick={() => setExpanded(expanded === card.id ? null : card.id)} />
+          ))}
+        </div>
+      )}
 
       <footer className="text-center mt-12 text-purple-400/50 text-sm">
         <p>

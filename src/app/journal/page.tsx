@@ -24,14 +24,43 @@ export default function JournalPage() {
     setReadings(getReadings());
   };
 
+  const handleExport = () => {
+    const data = readings.map((r) => ({
+      date: new Date(r.timestamp).toISOString(),
+      question: r.question,
+      spread: r.spread,
+      cards: r.cards.map((c) => `${c.card.name}${c.reversed ? " (R)" : ""} — ${c.position}`).join("; "),
+    }));
+    const lines = [
+      "Date,Question,Spread,Cards",
+      ...data.map((d) => `"${d.date}","${d.question.replace(/"/g, '""')}","${d.spread}","${d.cards.replace(/"/g, '""')}"`),
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `arcana-journal-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
       <header className="mb-8">
         <Link href="/" className="text-purple-400 hover:text-purple-300 text-sm">
           ← Back to Reading
         </Link>
-        <h1 className="text-3xl font-bold text-purple-100 mt-2">📖 Reading Journal</h1>
-        <p className="text-purple-300/60">Your tarot history — track patterns over time</p>
+        <div className="flex items-center justify-between mt-2">
+          <div>
+            <h1 className="text-3xl font-bold text-purple-100">📖 Reading Journal</h1>
+            <p className="text-purple-300/60">Your tarot history — track patterns over time</p>
+          </div>
+          {readings.length > 0 && (
+            <button onClick={handleExport} className="btn btn-sm bg-amber-600/80 text-white border-0 hover:bg-amber-500">
+              📥 Export CSV
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="mb-6">

@@ -109,6 +109,31 @@ export default function Home() {
           <span className="text-amber-300 text-sm font-medium">🃏 Balatro-inspired Deck Building</span>
           <span className="text-purple-300/60 text-sm"> — Customize your deck, track every reading</span>
         </div>
+
+        {/* Balatro Tutorial */}
+        <div className="mt-6 bg-gradient-to-br from-amber-950/30 to-purple-950/30 rounded-2xl p-6 border border-amber-500/15 text-left max-w-2xl mx-auto">
+          <h2 className="text-lg font-bold text-amber-300 mb-3">🎮 How Deck Building Works</h2>
+          <p className="text-purple-200/80 text-sm mb-4">
+            Inspired by <span className="text-amber-300">Balatro</span>, Arcana Deck lets you build custom tarot decks — keep only the cards that resonate with you.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div className="bg-purple-900/30 rounded-xl p-4 border border-purple-500/10">
+              <div className="text-2xl mb-2">1️⃣</div>
+              <div className="text-sm font-semibold text-purple-100">Create a Deck</div>
+              <div className="text-xs text-purple-400 mt-1">Go to 🃏 Decks and tap &quot;+ New Deck&quot;</div>
+            </div>
+            <div className="bg-purple-900/30 rounded-xl p-4 border border-purple-500/10">
+              <div className="text-2xl mb-2">2️⃣</div>
+              <div className="text-sm font-semibold text-purple-100">Pick Your Cards</div>
+              <div className="text-xs text-purple-400 mt-1">Toggle cards in/out — focus on themes that matter to you</div>
+            </div>
+            <div className="bg-purple-900/30 rounded-xl p-4 border border-purple-500/10">
+              <div className="text-2xl mb-2">3️⃣</div>
+              <div className="text-sm font-semibold text-purple-100">Draw & Journal</div>
+              <div className="text-xs text-purple-400 mt-1">Select your deck above, draw cards, save to your journal</div>
+            </div>
+          </div>
+        </div>
         <nav className="flex justify-center gap-4 mt-4">
           <Link href="/journal" className="btn btn-sm btn-outline border-purple-500/50 text-purple-300 hover:bg-purple-900">
             📖 Journal
