@@ -270,6 +270,68 @@ function generateSlug(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
+import { MINOR_ARCANA_DETAILS } from "./minor-arcana-descriptions";
+
+// RWS images for Minor Arcana from Wikimedia Commons (public domain)
+const RWS_MINOR: Record<string, string> = {
+  "ace-of-wands": `${RWS}/1/11/Wands01.jpg/300px-Wands01.jpg`,
+  "two-of-wands": `${RWS}/0/0f/Wands02.jpg/300px-Wands02.jpg`,
+  "three-of-wands": `${RWS}/f/ff/Wands03.jpg/300px-Wands03.jpg`,
+  "four-of-wands": `${RWS}/a/a4/Wands04.jpg/300px-Wands04.jpg`,
+  "five-of-wands": `${RWS}/9/9d/Wands05.jpg/300px-Wands05.jpg`,
+  "six-of-wands": `${RWS}/3/3b/Wands06.jpg/300px-Wands06.jpg`,
+  "seven-of-wands": `${RWS}/e/e4/Wands07.jpg/300px-Wands07.jpg`,
+  "eight-of-wands": `${RWS}/6/6a/Wands08.jpg/300px-Wands08.jpg`,
+  "nine-of-wands": `${RWS}/e/e7/Wands09.jpg/300px-Wands09.jpg`,
+  "ten-of-wands": `${RWS}/0/0b/Wands10.jpg/300px-Wands10.jpg`,
+  "page-of-wands": `${RWS}/6/6a/Wands11.jpg/300px-Wands11.jpg`,
+  "knight-of-wands": `${RWS}/1/16/Wands12.jpg/300px-Wands12.jpg`,
+  "queen-of-wands": `${RWS}/0/0d/Wands13.jpg/300px-Wands13.jpg`,
+  "king-of-wands": `${RWS}/c/ce/Wands14.jpg/300px-Wands14.jpg`,
+  "ace-of-cups": `${RWS}/3/36/Cups01.jpg/300px-Cups01.jpg`,
+  "two-of-cups": `${RWS}/f/f8/Cups02.jpg/300px-Cups02.jpg`,
+  "three-of-cups": `${RWS}/7/7a/Cups03.jpg/300px-Cups03.jpg`,
+  "four-of-cups": `${RWS}/3/35/Cups04.jpg/300px-Cups04.jpg`,
+  "five-of-cups": `${RWS}/d/d7/Cups05.jpg/300px-Cups05.jpg`,
+  "six-of-cups": `${RWS}/1/17/Cups06.jpg/300px-Cups06.jpg`,
+  "seven-of-cups": `${RWS}/a/ae/Cups07.jpg/300px-Cups07.jpg`,
+  "eight-of-cups": `${RWS}/6/60/Cups08.jpg/300px-Cups08.jpg`,
+  "nine-of-cups": `${RWS}/2/24/Cups09.jpg/300px-Cups09.jpg`,
+  "ten-of-cups": `${RWS}/8/84/Cups10.jpg/300px-Cups10.jpg`,
+  "page-of-cups": `${RWS}/a/ad/Cups11.jpg/300px-Cups11.jpg`,
+  "knight-of-cups": `${RWS}/f/fa/Cups12.jpg/300px-Cups12.jpg`,
+  "queen-of-cups": `${RWS}/6/62/Cups13.jpg/300px-Cups13.jpg`,
+  "king-of-cups": `${RWS}/0/04/Cups14.jpg/300px-Cups14.jpg`,
+  "ace-of-swords": `${RWS}/1/1a/Swords01.jpg/300px-Swords01.jpg`,
+  "two-of-swords": `${RWS}/9/9e/Swords02.jpg/300px-Swords02.jpg`,
+  "three-of-swords": `${RWS}/0/02/Swords03.jpg/300px-Swords03.jpg`,
+  "four-of-swords": `${RWS}/b/bf/Swords04.jpg/300px-Swords04.jpg`,
+  "five-of-swords": `${RWS}/2/23/Swords05.jpg/300px-Swords05.jpg`,
+  "six-of-swords": `${RWS}/2/29/Swords06.jpg/300px-Swords06.jpg`,
+  "seven-of-swords": `${RWS}/3/34/Swords07.jpg/300px-Swords07.jpg`,
+  "eight-of-swords": `${RWS}/a/a7/Swords08.jpg/300px-Swords08.jpg`,
+  "nine-of-swords": `${RWS}/2/2f/Swords09.jpg/300px-Swords09.jpg`,
+  "ten-of-swords": `${RWS}/d/d4/Swords10.jpg/300px-Swords10.jpg`,
+  "page-of-swords": `${RWS}/4/4c/Swords11.jpg/300px-Swords11.jpg`,
+  "knight-of-swords": `${RWS}/b/b0/Swords12.jpg/300px-Swords12.jpg`,
+  "queen-of-swords": `${RWS}/d/d4/Swords13.jpg/300px-Swords13.jpg`,
+  "king-of-swords": `${RWS}/3/33/Swords14.jpg/300px-Swords14.jpg`,
+  "ace-of-pentacles": `${RWS}/f/fd/Pents01.jpg/300px-Pents01.jpg`,
+  "two-of-pentacles": `${RWS}/9/9f/Pents02.jpg/300px-Pents02.jpg`,
+  "three-of-pentacles": `${RWS}/4/42/Pents03.jpg/300px-Pents03.jpg`,
+  "four-of-pentacles": `${RWS}/3/35/Pents04.jpg/300px-Pents04.jpg`,
+  "five-of-pentacles": `${RWS}/9/96/Pents05.jpg/300px-Pents05.jpg`,
+  "six-of-pentacles": `${RWS}/a/a6/Pents06.jpg/300px-Pents06.jpg`,
+  "seven-of-pentacles": `${RWS}/6/6a/Pents07.jpg/300px-Pents07.jpg`,
+  "eight-of-pentacles": `${RWS}/4/49/Pents08.jpg/300px-Pents08.jpg`,
+  "nine-of-pentacles": `${RWS}/f/f0/Pents09.jpg/300px-Pents09.jpg`,
+  "ten-of-pentacles": `${RWS}/4/42/Pents10.jpg/300px-Pents10.jpg`,
+  "page-of-pentacles": `${RWS}/e/ec/Pents11.jpg/300px-Pents11.jpg`,
+  "knight-of-pentacles": `${RWS}/d/d5/Pents12.jpg/300px-Pents12.jpg`,
+  "queen-of-pentacles": `${RWS}/8/88/Pents13.jpg/300px-Pents13.jpg`,
+  "king-of-pentacles": `${RWS}/1/1c/Pents14.jpg/300px-Pents14.jpg`,
+};
+
 function generateMinorArcana(): TarotCard[] {
   const suits: { suit: TarotCard["suit"]; symbol: string; element: string; theme: string; themeZh: string }[] = [
     { suit: "wands", symbol: "🪄", element: "Fire", theme: "passion, creativity, action", themeZh: "权杖" },
@@ -279,20 +341,20 @@ function generateMinorArcana(): TarotCard[] {
   ];
 
   const ranks = [
-    { num: 1, name: "Ace", upright: "New opportunity", reversed: "Missed chance", nameZh: "A" },
-    { num: 2, name: "Two", upright: "Balance, partnership", reversed: "Imbalance, indecision", nameZh: "2" },
-    { num: 3, name: "Three", upright: "Growth, collaboration", reversed: "Overextension, delays", nameZh: "3" },
-    { num: 4, name: "Four", upright: "Stability, foundation", reversed: "Stagnation, rigidity", nameZh: "4" },
-    { num: 5, name: "Five", upright: "Conflict, challenge", reversed: "Resolution, compromise", nameZh: "5" },
-    { num: 6, name: "Six", upright: "Harmony, giving", reversed: "Disharmony, selfishness", nameZh: "6" },
-    { num: 7, name: "Seven", upright: "Reflection, assessment", reversed: "Confusion, deception", nameZh: "7" },
-    { num: 8, name: "Eight", upright: "Movement, progress", reversed: "Stagnation, resistance", nameZh: "8" },
-    { num: 9, name: "Nine", upright: "Nearing completion", reversed: "Setbacks, delays", nameZh: "9" },
-    { num: 10, name: "Ten", upright: "Completion, fulfillment", reversed: "Excess, burden", nameZh: "10" },
-    { num: 11, name: "Page", upright: "Curiosity, new message", reversed: "Immaturity, insecurity", nameZh: "侍从" },
-    { num: 12, name: "Knight", upright: "Action, adventure", reversed: "Recklessness, haste", nameZh: "骑士" },
-    { num: 13, name: "Queen", upright: "Nurturing mastery", reversed: "Insecurity, dependence", nameZh: "王后" },
-    { num: 14, name: "King", upright: "Leadership, authority", reversed: "Tyranny, manipulation", nameZh: "国王" },
+    { num: 1, name: "Ace", nameZh: "A" },
+    { num: 2, name: "Two", nameZh: "2" },
+    { num: 3, name: "Three", nameZh: "3" },
+    { num: 4, name: "Four", nameZh: "4" },
+    { num: 5, name: "Five", nameZh: "5" },
+    { num: 6, name: "Six", nameZh: "6" },
+    { num: 7, name: "Seven", nameZh: "7" },
+    { num: 8, name: "Eight", nameZh: "8" },
+    { num: 9, name: "Nine", nameZh: "9" },
+    { num: 10, name: "Ten", nameZh: "10" },
+    { num: 11, name: "Page", nameZh: "侍从" },
+    { num: 12, name: "Knight", nameZh: "骑士" },
+    { num: 13, name: "Queen", nameZh: "王后" },
+    { num: 14, name: "King", nameZh: "国王" },
   ];
 
   const cards: TarotCard[] = [];
@@ -302,20 +364,23 @@ function generateMinorArcana(): TarotCard[] {
     for (const r of ranks) {
       const suitName = s.suit!.charAt(0).toUpperCase() + s.suit!.slice(1);
       const fullName = `${r.name} of ${suitName}`;
+      const slug = generateSlug(fullName);
+      const detail = MINOR_ARCANA_DETAILS[slug];
       cards.push({
         id: id++,
-        slug: generateSlug(fullName),
+        slug,
         name: fullName,
         nameZh: `${s.themeZh}${r.nameZh}`,
         arcana: "minor",
         suit: s.suit,
         number: r.num,
-        upright: `${r.upright} in ${s.theme}`,
-        reversed: `${r.reversed} in ${s.theme}`,
-        description: `The ${r.name} of ${suitName} brings ${s.element} energy — ${s.theme}.`,
+        upright: detail?.upright ?? `${r.name} energy in ${s.theme}`,
+        reversed: detail?.reversed ?? `Blocked ${r.name.toLowerCase()} energy in ${s.theme}`,
+        description: detail?.description ?? `The ${r.name} of ${suitName} brings ${s.element} energy — ${s.theme}.`,
         symbol: s.symbol,
-        element: s.element,
-        keywords: [r.name.toLowerCase(), s.suit!, s.element.toLowerCase()],
+        image: RWS_MINOR[slug],
+        element: detail?.zodiac ?? s.element,
+        keywords: detail?.keywords ?? [r.name.toLowerCase(), s.suit!, s.element.toLowerCase()],
       });
     }
   }
