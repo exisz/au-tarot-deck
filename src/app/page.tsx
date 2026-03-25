@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { ALL_CARDS, SPREAD_POSITIONS, TarotCard, DrawnCard, Reading } from "@/lib/tarot-data";
-import { saveReading, getDecks } from "@/lib/storage";
+import { saveReading, getDecks, recordDailyReading } from "@/lib/storage";
 import Link from "next/link";
 
 type SpreadType = "single" | "three" | "celtic";
@@ -92,6 +92,7 @@ export default function Home() {
       notes: "",
     };
     saveReading(reading);
+    recordDailyReading();
     setSaved(true);
   };
 
@@ -134,7 +135,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <nav className="flex justify-center gap-4 mt-4">
+        <nav className="flex flex-wrap justify-center gap-4 mt-4">
+          <Link href="/daily" className="btn btn-sm bg-gradient-to-r from-amber-600/80 to-amber-700/80 text-white border-0 hover:from-amber-500 hover:to-amber-600">
+            ☀️ Daily Card
+          </Link>
           <Link href="/journal" className="btn btn-sm btn-outline border-purple-500/50 text-purple-300 hover:bg-purple-900">
             📖 Journal
           </Link>
