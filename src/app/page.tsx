@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { ALL_CARDS, SPREAD_POSITIONS, TarotCard, DrawnCard, Reading } from "@/lib/tarot-data";
 import { saveReading, getDecks, recordDailyReading } from "@/lib/storage";
+import { generateSpreadReading } from "@/lib/reading-engine";
 import Link from "next/link";
 
 type SpreadType = "single" | "three" | "celtic";
@@ -60,6 +61,8 @@ export default function Home() {
   const [revealed, setRevealed] = useState<boolean[]>([]);
   const [saved, setSaved] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState("default");
+  const [spreadReading, setSpreadReading] = useState<string | null>(null);
+  const [readingLoading, setReadingLoading] = useState(false);
 
   const handleDraw = useCallback(() => {
     const decks = getDecks();
@@ -69,6 +72,7 @@ export default function Home() {
     setCards(drawn);
     setRevealed(new Array(drawn.length).fill(false));
     setSaved(false);
+    setSpreadReading(null);
   }, [spread, selectedDeck]);
 
   const revealCard = (index: number) => {
@@ -245,6 +249,50 @@ export default function Home() {
                 )
             )}
           </div>
+        </div>
+      )}
+
+      {/* AI Spread Reading */}
+      {cards.length > 0 && revealed.every(Boolean) && (
+        <div className="bg-gradient-to-br from-indigo-950/50 to-purple-950/50 rounded-2xl p-6 border border-indigo-500/20 mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-indigo-300">🤖 AI Deep Reading</h3>
+            <span className="text-xs px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Free Beta
+            </span>
+          </div>
+          {spreadReading ? (
+            <div className="prose prose-invert prose-sm max-w-none">
+              {spreadReading.split("\n\n").map((para, i) => (
+                <p key={i} className="text-sm text-purple-200/80 leading-relaxed mb-3"
+                   dangerouslySetInnerHTML={{ __html: para
+                     .replace(/^### (.+)$/gm, '<strong class="text-amber-300 text-base block mb-1">$1</strong>')
+                     .replace(/^## (.+)$/gm, '<strong class="text-lg text-amber-200 block mb-2">$1</strong>')
+                     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-300">$1</strong>')
+                     .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                   }} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-purple-200/60 text-sm mb-4">
+              Reveal all cards to unlock a personalized AI interpretation of your full spread.
+            </p>
+          )}
+          {!spreadReading && (
+            <button
+              onClick={() => {
+                setReadingLoading(true);
+                setTimeout(() => {
+                  setSpreadReading(generateSpreadReading(cards, question || undefined));
+                  setReadingLoading(false);
+                }, 1200);
+              }}
+              disabled={readingLoading}
+              className={`btn btn-sm border-0 ${readingLoading ? "bg-indigo-600/50 text-indigo-200 cursor-wait" : "bg-indigo-600 text-white hover:bg-indigo-500"}`}
+            >
+              {readingLoading ? "🔮 Channeling the Arcana..." : "🔮 Get AI Reading — Free"}
+            </button>
+          )}
         </div>
       )}
 

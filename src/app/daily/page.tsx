@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ALL_CARDS, DrawnCard } from "@/lib/tarot-data";
 import { saveReading, getStreak, recordDailyReading } from "@/lib/storage";
+import { generateReading } from "@/lib/reading-engine";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -35,6 +36,8 @@ export default function DailyPage() {
   const [streak, setStreak] = useState({ currentStreak: 0, longestStreak: 0, lastReadingDate: "" });
   const [revealed, setRevealed] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [aiReading, setAiReading] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     const d = getDailyCard();
@@ -168,27 +171,48 @@ export default function DailyPage() {
             </div>
           </div>
 
-          {/* AI Reading Teaser (Premium) */}
+          {/* AI Reading */}
           <div className="bg-gradient-to-br from-indigo-950/50 to-purple-950/50 rounded-2xl p-6 border border-indigo-500/20 relative overflow-hidden">
-            <div className="absolute top-3 right-3 text-xs px-2 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-              Coming Soon
+            <div className="absolute top-3 right-3 text-xs px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Free Beta
             </div>
             <h3 className="text-lg font-semibold text-indigo-300 mb-2">
               🤖 AI Deep Reading
             </h3>
             <p className="text-purple-200/70 text-sm mb-4">
-              Get a personalized AI interpretation of your daily card based on your question,
-              reading history, and current life context. Powered by advanced language models.
+              Get a personalized interpretation of your daily card based on its meaning,
+              position, and your reading history.
             </p>
-            <div className="bg-indigo-900/30 rounded-xl p-4 border border-indigo-500/10 mb-4">
-              <div className="text-xs text-indigo-400 mb-2">Preview of what AI Deep Reading looks like:</div>
-              <div className="text-sm text-purple-200/60 italic">
-                &quot;{card.name} appearing as your daily card suggests a time for {daily.reversed ? "introspection about challenges in" : "embracing"} {card.upright?.split(",")[0]?.toLowerCase() || "transformation"}.
-                Combined with your recent readings, there&apos;s a pattern emerging around personal growth...&quot;
+            {aiReading ? (
+              <div className="bg-indigo-900/30 rounded-xl p-4 border border-indigo-500/10 mb-4">
+                {aiReading.split("\n\n").map((para, i) => (
+                  <p key={i} className="text-sm text-purple-200/80 leading-relaxed mb-3 last:mb-0"
+                     dangerouslySetInnerHTML={{ __html: para.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-300">$1</strong>') }} />
+                ))}
               </div>
-            </div>
-            <button disabled className="btn btn-sm bg-indigo-600/50 text-indigo-200 border-0 cursor-not-allowed">
-              🔒 Unlock AI Reading — Free during beta
+            ) : (
+              <div className="bg-indigo-900/30 rounded-xl p-4 border border-indigo-500/10 mb-4">
+                <div className="text-xs text-indigo-400 mb-2">Preview:</div>
+                <div className="text-sm text-purple-200/60 italic">
+                  &quot;{card.name} appearing as your daily card suggests a time for {daily.reversed ? "introspection about challenges in" : "embracing"} {card.upright?.split(",")[0]?.toLowerCase() || "transformation"}.
+                  Combined with your recent readings, there&apos;s a pattern emerging around personal growth...&quot;
+                </div>
+              </div>
+            )}
+            <button
+              onClick={() => {
+                setAiLoading(true);
+                // Small delay for UX feel
+                setTimeout(() => {
+                  const reading = generateReading({ card, reversed: daily.reversed, position: "Daily Guidance" });
+                  setAiReading(reading);
+                  setAiLoading(false);
+                }, 800);
+              }}
+              disabled={aiLoading || !!aiReading}
+              className={`btn btn-sm border-0 ${aiReading ? "bg-emerald-600/50 text-emerald-200 cursor-default" : aiLoading ? "bg-indigo-600/50 text-indigo-200 cursor-wait" : "bg-indigo-600 text-white hover:bg-indigo-500"}`}
+            >
+              {aiReading ? "✨ Reading Complete" : aiLoading ? "🔮 Channeling..." : "🔮 Get AI Reading — Free"}
             </button>
           </div>
         </div>
