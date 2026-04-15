@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import AuthHeader from "@/components/AuthHeader";
 
 export const metadata: Metadata = {
   title: "Arcana Deck — Online Tarot with Deck Building & Journal",
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="en" data-theme="dark">
       <body className="min-h-screen bg-[#0f0a1a] text-purple-100">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <AuthHeader />
         {children}
       </body>
     </html>
